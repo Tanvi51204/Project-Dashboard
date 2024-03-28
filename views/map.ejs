@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Map</title>
+    <!-- Include Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        #map { height: 400px; }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+        <a class="navbar-brand" href="#">Fire Incidents Dashboard</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link" href="#">Home</a>
+                </li>
+                <!-- Add Location Button -->
+                <li class="nav-item ml-2">
+                    <a class="nav-link" href="fireincident_form.ejs">Add Incident Location</a>
+                </li>
+                <!-- Add Fire Station Button -->
+                <li class="nav-item ml-2">
+                    <a class="nav-link" href="firestation_form.ejs">Add Fire Station</a>
+                </li>
+                <!-- Add Hospital Button -->
+                <li class="nav-item ml-2">
+                    <a class="nav-link" href="hospital_form.ejs">Add Hospital</a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    
+    <h1>Map of Fire Incidents, Hospitals and Fire Stations
+    </h1>
+    <div id="map"></div>
+
+    <!-- Include Leaflet JavaScript -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+        // Initialize Leaflet map
+        const map = L.map('map').setView([28.6139, 77.209], 10); // Set initial center and zoom level
+
+        // Add a base layer to the map (e.g., OpenStreetMap)
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Extract location data passed from the server-side rendering
+        const locations = JSON.parse('<%- JSON.stringify(locations) %>');
+        const hospitalIcon = L.icon({
+            iconUrl: 'hospital.png', // Path to hospital marker icon
+            iconSize: [30, 30] // Size of the icon
+        });
+
+        const fireStationIcon = L.icon({
+            iconUrl: 'fireStation.png', // Path to fire station marker icon
+            iconSize: [30, 30] // Size of the icon
+        });
+
+        const fireIncidentIcon = L.icon({
+            iconUrl: 'fireIncident.png', // Path to fire incident marker icon
+            iconSize: [30, 30] // Size of the icon
+        });
+
+        // Add markers for each location to the map
+        locations.forEach(location => {
+            let markerIcon;
+            if (location.type === 'hospital') {
+                markerIcon = hospitalIcon;
+            } else if (location.type === 'fire_station') {
+                markerIcon = fireStationIcon;
+            } else if (location.type === 'fire_incident') {
+                markerIcon = fireIncidentIcon;
+            }
+            const marker = L.marker([location.latitude, location.longitude], { icon: markerIcon }).addTo(map);
+            marker.bindPopup(getPopupContent(location));
+        });
+
+        // Function to get popup content based on location type
+        function getPopupContent(location) {
+            if (location.type === 'hospital') {
+                return `<b>${location.Name}</b><br>Hospital<br>Latitude: ${location.latitude}<br>Longitude: ${location.longitude}`;
+            } else if (location.type === 'fire_station') {
+                return `<b>${location.StationID}</b><br>Fire Station<br>Latitude: ${location.latitude}<br>Longitude: ${location.longitude}`;
+            } else if (location.type === 'fire_incident') {
+                return `<b>Fire Incident</b><br>${location.incidentId}<br>Latitude: ${location.latitude}<br>Longitude: ${location.longitude}`;
+            }
+        }
+    </script>
+     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</body>
+</html>

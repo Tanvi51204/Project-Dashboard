@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hospital Locations</title>
+    <!-- Include Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        #map { height: 400px; }
+    </style>
+</head>
+<body>
+    <h1>Hospital Locations</h1>
+    <div id="map"></div>
+
+    <!-- Include Leaflet JavaScript -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script>
+        // Initialize Leaflet map
+        const map = L.map('map').setView([28.6139, 77.209], 10); // Set initial center and zoom level
+
+        // Add a base layer to the map (e.g., OpenStreetMap)
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        // Extract location data passed from the server-side rendering
+        
+        const locations = JSON.parse('<%- JSON.stringify(locations) %>');
+
+        // Add markers for each hospital location to the map
+        locations.forEach(location => {
+            L.marker([location.latitude, location.longitude]).addTo(map)
+                .bindPopup(`<b>${location.name}</b><br>Address: ${location.address}`);
+        });
+    </script>
+</body>
+</html>
