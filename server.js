@@ -1,10 +1,14 @@
 const express = require('express');
+const bodyParser = require('body-parser');
 const {Pool} = require('pg');
 const router = express.Router();
 const app=express();
 const port=3000;
+
+app.use(bodyParser.json());
 app.use(express.static('views'));
 app.set('view engine', 'ejs');
+app.use(bodyParser.urlencoded({ extended: true }));
 
 const pool= new Pool(
     {
@@ -16,6 +20,8 @@ const pool= new Pool(
     }
 );
 pool.connect();
+
+//not being used 👇🏻
 app.get('/test', async (req, res) => {
     try {
         // Execute the test query
@@ -29,6 +35,8 @@ app.get('/test', async (req, res) => {
         res.status(500).send('Internal server error');
     }
 });
+
+
 app.get('/', async (req, res) => {
     try {
         const client = await pool.connect();
@@ -43,6 +51,7 @@ app.get('/', async (req, res) => {
         res.status(500).send('Internal server error');
     }
 });
+
 app.get('/hospitals', async(req,res)=>{
     try{
         const client = await pool.connect();
@@ -50,6 +59,19 @@ app.get('/hospitals', async(req,res)=>{
         const locations = result.rows;
         client.release();
         res.render('hospitals', { locations });
+        
+    } catch(error){
+        console.error('Error fetching data from database',error);
+        res.status(500).send('Internal server error');
+    }
+})
+app.get('/fireincident', async(req,res)=>{
+    try{
+        const client = await pool.connect();
+        const result = await client.query('SELECT * FROM public.fireincident'); 
+        const locations = result.rows;
+        client.release();
+        res.render('fireincident', { locations });
         
     } catch(error){
         console.error('Error fetching data from database',error);
@@ -110,33 +132,31 @@ app.get('/map', async (req, res) => {
 
         // Render the map.ejs view and pass the combined data to it
         res.render('map', { locations: combinedData });
+        
     } catch (error) {
         console.error('Error fetching data from database:', error);
         res.status(500).send('Internal server error');
     }
 });
 
-app.post('/submit-location', async (req, res) => {
-    console.log('Received POST request to /submit-location:', req.body);
-    const {StationID, latitude, longitude } = req.body;
+app.post('/addLoc', (req, res) => {
+    const {sql, values} = req.body;
 
-    try {
-        const client = await pool.connect();
-        const query = 'INSERT INTO public.firestations (StationID,latitude, longitude) VALUES ($1, $2, $3)';
-        const values = [StationID, latitude, longitude ];
-        await client.query(query, values);
-        client.release();
-        
-        res.status(200).send('Location added successfully!');
-    } catch (error) {
-        console.error('Error adding location to database:', error);
-        res.status(500).send('Internal server error');
-    }
+    // Insert data into the database
+    pool.query(sql, values, 
+               (error, results) => {
+        if (error) {
+            console.error('Error inserting location:', error);
+            res.status(500).send('Error inserting location');
+        } else {
+            res.redirect('map.ejs');
+            console.log('Location added successfully');
+            //res.status(200).send('Location added successfully');
+        }
+    });
 });
 
-app.get('/firestation_form.ejs',async(req,res)=>{
-    res.redirect('/firestation_form.ejs');
-})
+
 
 app.listen(port, () => {
     console.log(`Server is running at http://localhost:${port}`);
