@@ -69,10 +69,8 @@
             </div>
         </form>
               <div class="p-2 w-full pt-8 mt-8 border-t border-gray-200 text-center">
-                <a class="text-red-500" href="fireincident.ejs">example@email.com</a>
-                <p class="leading-normal my-5">49 Smith St.
-                  <br>Saint Cloud, MN 56301
-                </p>
+                <a class="text-red-500" href="fireincident.ejs">firedashboard@email.com</a>
+               
                 <span class="inline-flex">
                   <a class="text-gray-500">
                     <svg fill="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-5 h-5" viewBox="0 0 24 24">
@@ -116,13 +114,13 @@
                 const latitude = $('#latitude').val();
                 const longitude = $('#longitude').val();
 
-                // Use parameterized query to prevent SQL injection
+                
                 const sql = 'INSERT INTO public.fireincident(latitude, longitude, "incidentId", date) VALUES ($1, $2, $3, $4);';
                 const values = [latitude,longitude,incidentid,date];
                 // console.log(values);
 
                 $.ajax({
-                    url: '/addLoc', // Replace with your server endpoint
+                    url: '/addLoc', 
                     method: 'POST',
                     data: { 
                         sql : sql,
@@ -130,11 +128,11 @@
                     },
                     success: function(response) {
                         console.log('Location added successfully');
-                        // Optionally, perform any actions upon successful insertion
+                       
                     },
                     error: function(xhr, status, error) {
                         console.error('Error adding location:', error);
-                        // Handle errors appropriately
+                        
                     }
                 });
 

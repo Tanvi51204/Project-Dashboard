@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Map</title>
-    <!-- Include Leaflet CSS -->
+    
     <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
     <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
@@ -13,36 +13,14 @@
     </style>
 </head>
 <body>
-    <!-- <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <a class="navbar-brand" href="#">Fire Incidents Dashboard</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav ml-auto">
-               
-                <li class="nav-item ml-2">
-                    <a class="nav-link" href="fireincident_form.html">Add Incident Location</a>
-                </li>
-                
-                <li class="nav-item ml-2">
-                    <a class="nav-link" href="firestation_form.html">Add Fire Station</a>
-                </li>
-                
-                <li class="nav-item ml-2">
-                    <a class="nav-link" href="hospital_form.html">Add Hospital</a>
-                </li>
-            </ul>
-        </div>
-    </nav>
-     -->
+   
      <header class="text-gray-600 body-font">
         <div class="container mx-auto flex flex-wrap p-5 flex-col md:flex-row items-center">
           <a class="flex title-font font-medium items-center text-gray-900 mb-4 md:mb-0">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-10 h-10 text-white p-2 bg-red-500 rounded-full" viewBox="0 0 24 24">
               <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
             </svg>
-            <span class="ml-3 text-xl">Agni Sameeksha</span>
+            <span class="ml-3 text-xl">VigilNets</span>
           </a>
           <nav class="md:ml-auto md:mr-auto flex flex-wrap items-center text-base justify-center">
             <a class="mr-5 hover:text-gray-900" href="fireincident_form.html">Fire Incidents</a>
@@ -50,46 +28,46 @@
             <a class="mr-5 hover:text-gray-900" href="hospital_form.html">Hospitals</a>
            
           </nav>
-          <button class="inline-flex items-center bg-gray-100 border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 rounded text-base mt-4 md:mt-0">Logout
+          <!-- <button class="inline-flex items-center bg-gray-100 border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 rounded text-base mt-4 md:mt-0">Logout
             <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-4 h-4 ml-1" viewBox="0 0 24 24">
               <path d="M5 12h14M12 5l7 7-7 7"></path>
             </svg>
-          </button>
+          </button> -->
         </div>
       </header>
 
-    <!-- <h1 style="font: size 100px; ">Map of Fire Incidents, Hospitals and Fire Stations </h1> -->
+    
     <div id="map"></div>
 
-    <!-- Include Leaflet JavaScript -->
+   
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script>
-        // Initialize Leaflet map
-        const map = L.map('map').setView([28.6139, 77.209], 10); // Set initial center and zoom level
+        // Leaflet map
+        const map = L.map('map').setView([28.6139, 77.209], 10); // initial center and zoom level
 
-        // Add a base layer to the map (e.g., OpenStreetMap)
+        // base layer to the map 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
             attribution: '&copy; OpenStreetMap contributors'
         }).addTo(map);
 
-        // Extract location data passed from the server-side rendering
+        // location data passed from the server-side rendering
         const locations = JSON.parse('<%- JSON.stringify(locations) %>');
         const hospitalIcon = L.icon({
-            iconUrl: 'hospital.png', // Path to hospital marker icon
-            iconSize: [30, 30] // Size of the icon
+            iconUrl: 'hospital.png', 
+            iconSize: [30, 30] 
         });
 
         const fireStationIcon = L.icon({
-            iconUrl: 'fireStation.png', // Path to fire station marker icon
-            iconSize: [30, 30] // Size of the icon
+            iconUrl: 'fireStation.png', 
+            iconSize: [30, 30] 
         });
 
         const fireIncidentIcon = L.icon({
-            iconUrl: 'fireIncident.png', // Path to fire incident marker icon
-            iconSize: [30, 30] // Size of the icon
+            iconUrl: 'fireIncident.png', 
+            iconSize: [30, 30]
         });
 
-        // Add markers for each location to the map
+        
         locations.forEach(location => {
             let markerIcon;
             if (location.type === 'hospital') {
@@ -103,7 +81,7 @@
             marker.bindPopup(getPopupContent(location));
         });
 
-        // Function to get popup content based on location type
+        
         function getPopupContent(location) {
             if (location.type === 'hospital') {
                 return `<b>${location.Name}</b><br>Hospital<br>Latitude: ${location.latitude}<br>Longitude: ${location.longitude}`;
@@ -123,9 +101,9 @@
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-10 h-10 text-white p-2 bg-red-500 rounded-full" viewBox="0 0 24 24">
               <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
             </svg>
-            <span class="ml-3 text-xl">Agni Sameeksha</span>
+            <span class="ml-3 text-xl">VigilNets</span>
           </a>
-          <p class="text-sm text-gray-500 sm:ml-4 sm:pl-4 sm:border-l-2 sm:border-gray-200 sm:py-2 sm:mt-0 mt-4">© 2024 Agni Sameeksha —
+          <p class="text-sm text-gray-500 sm:ml-4 sm:pl-4 sm:border-l-2 sm:border-gray-200 sm:py-2 sm:mt-0 mt-4">© 2024 VigilNets —
             <a href="" class="text-gray-600 ml-1" rel="noopener noreferrer" target="_blank">@fireincidents</a>
           </p>
           <span class="inline-flex sm:ml-auto sm:mt-0 mt-4 justify-center sm:justify-start">
