@@ -10,9 +10,8 @@ VigilNets is a dashboard website for monitoring fire incidents, fire stations, a
 ## Installation
 
 1. Clone the repository.
-2. Install dependencies using `npm install`.
-3. Configure the database connection in `config.js`.
-4. Run the application using `npm start`.
+2. Install dependencies using `npm install`..
+3. Run the application using `npm start`.
 
 ## Usage
 
