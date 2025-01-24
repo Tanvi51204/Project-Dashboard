@@ -62,7 +62,9 @@
                   <input type="text" id="longitude" name="longitude" class="w-full bg-gray-100 bg-opacity-50 rounded border border-gray-300 focus:border-red-500 focus:bg-white focus:ring-2 focus:ring-red-200 text-base outline-none text-gray-700 py-1 px-3 leading-8 transition-colors duration-200 ease-in-out">
                 </div>
               </div>
-             
+              <div class="p-2 w-full">
+                <button class="flex mx-auto text-white bg-red-500 border-0 py-2 px-8 focus:outline-none hover:bg-red-600 rounded text-lg" type="submit" onclick="getLocation()">Get Location</button>
+              </div>
               <div class="p-2 w-full">
                 <button class="flex mx-auto text-white bg-red-500 border-0 py-2 px-8 focus:outline-none hover:bg-red-600 rounded text-lg" type="submit">Submit</button>
               </div>
@@ -138,6 +140,39 @@
 
             });
         });
+    </script>
+    <script>
+      function getLocation() {
+            if ("geolocation" in navigator) {
+                navigator.geolocation.getCurrentPosition(successCallback, errorCallback);
+            } else {
+                console.log("Geolocation is not supported by this browser.");
+            }
+        }
+
+        function successCallback(position) {
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
+            console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
+            // You can now use the coordinates as needed
+        }
+
+        function errorCallback(error) {
+            switch(error.code) {
+                case error.PERMISSION_DENIED:
+                    console.log("User denied the request for Geolocation.");
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    console.log("Location information is unavailable.");
+                    break;
+                case error.TIMEOUT:
+                    console.log("The request to get user location timed out.");
+                    break;
+                case error.UNKNOWN_ERROR:
+                    console.log("An unknown error occurred.");
+                    break;
+            }
+        }
     </script>
     
 </body>

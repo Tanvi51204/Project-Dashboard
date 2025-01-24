@@ -28,11 +28,6 @@
             <a class="mr-5 hover:text-gray-900" href="hospital_form.html">Hospitals</a>
            
           </nav>
-          <!-- <button class="inline-flex items-center bg-gray-100 border-0 py-1 px-3 focus:outline-none hover:bg-gray-200 rounded text-base mt-4 md:mt-0">Logout
-            <svg fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" class="w-4 h-4 ml-1" viewBox="0 0 24 24">
-              <path d="M5 12h14M12 5l7 7-7 7"></path>
-            </svg>
-          </button> -->
         </div>
       </header>
 
@@ -41,57 +36,126 @@
 
    
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
     <script>
-        // Leaflet map
-        const map = L.map('map').setView([28.6139, 77.209], 10); // initial center and zoom level
+      // Leaflet map setup
+      const map = L.map('map').setView([28.6139, 77.209], 10); // initial center and zoom level
+  
+      // Add the base layer to the map
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+          attribution: '&copy; OpenStreetMap contributors'
+      }).addTo(map);
+  
+      // Location data passed from the server-side rendering
+      const locations = JSON.parse('<%- JSON.stringify(locations) %>');
+  
+      const hospitalIcon = L.icon({
+          iconUrl: 'hospital.png', 
+          iconSize: [30, 30] 
+      });
+  
+      const fireStationIcon = L.icon({
+          iconUrl: 'fireStation.png', 
+          iconSize: [30, 30] 
+      });
+  
+      const fireIncidentIcon = L.icon({
+          iconUrl: 'fireIncident.png', 
+          iconSize: [30, 30]
+      });
+  
 
-        // base layer to the map 
-        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-            attribution: '&copy; OpenStreetMap contributors'
-        }).addTo(map);
+    const clusterColors = {
+    0: 'red',
+    1: 'blue',
+    2: 'green',
+    3: 'purple',
+    4: 'orange',
+    5: 'yellow'
+};
+//       locations.forEach(location => {
+//     let color;
 
-        // location data passed from the server-side rendering
-        const locations = JSON.parse('<%- JSON.stringify(locations) %>');
-        const hospitalIcon = L.icon({
-            iconUrl: 'hospital.png', 
-            iconSize: [30, 30] 
+//     // Assign different colors based on the cluster
+//     if (location.cluster === 0) {
+//         color = 'red';
+//     } else if (location.cluster === 1) {
+//         color = 'blue';
+//     } else if(location.cluster === 2){
+//         color = 'green';
+//     } else if(location.cluster === 3){
+//         color = 'purple';
+//     } else if(location.cluster === 4){
+//         color = 'orange';
+//     } else{
+//       color = 'yellow'
+//     }
+
+//     const marker = L.circleMarker([location.latitude, location.longitude], {
+//         radius: 10,
+//         fillColor: color,
+//         color: color,
+//         weight: 1,
+//         opacity: 1,
+//         fillOpacity: 0.8
+//     }).addTo(map);
+
+//     marker.bindPopup(getPopupContent(location));
+// });
+locations.forEach(location => {
+    let marker;
+
+    const color = clusterColors[location.cluster];
+    const markerSize = 0.01;
+
+    if (location.type === 'hospital') {
+        marker = L.circleMarker([location.latitude, location.longitude], {
+            radius: 10,
+            fillColor: color,
+            color: color,
+            weight: 1,
+            opacity: 1,
+            fillOpacity: 0.8
         });
-
-        const fireStationIcon = L.icon({
-            iconUrl: 'fireStation.png', 
-            iconSize: [30, 30] 
+    } else if (location.type === 'fire_station') {
+        marker = L.rectangle([
+            [location.latitude - markerSize, location.longitude - markerSize],
+            [location.latitude + markerSize, location.longitude + markerSize]
+        ], {
+            color: color,
+            fillColor: color,
+            weight: 1,
+            fillOpacity: 0.8
         });
-
-        const fireIncidentIcon = L.icon({
-            iconUrl: 'fireIncident.png', 
-            iconSize: [30, 30]
+    } else if (location.type === 'fire_incident') {
+        marker = L.polygon([
+            [location.latitude, location.longitude - markerSize],
+            [location.latitude - markerSize, location.longitude + markerSize],
+            [location.latitude + markerSize, location.longitude + markerSize]
+        ], {
+            color: color,
+            fillColor: color,
+            weight: 1,
+            fillOpacity: 0.8
         });
+    }
 
-        
-        locations.forEach(location => {
-            let markerIcon;
-            if (location.type === 'hospital') {
-                markerIcon = hospitalIcon;
-            } else if (location.type === 'fire_station') {
-                markerIcon = fireStationIcon;
-            } else if (location.type === 'fire_incident') {
-                markerIcon = fireIncidentIcon;
-            }
-            const marker = L.marker([location.latitude, location.longitude], { icon: markerIcon }).addTo(map);
-            marker.bindPopup(getPopupContent(location));
-        });
+    marker.addTo(map);
+    marker.bindPopup(getPopupContent(location));
+});
+  
+      function getPopupContent(location) {
+          if (location.type === 'hospital') {
+              return `<b>${location.Name}</b><br>Hospital<br>Latitude: ${location.latitude}<br>Longitude: ${location.longitude}<br>Cluster: ${location.cluster}`;
+          } else if (location.type === 'fire_station') {
+              return `<b>${location.StationID}</b><br>Fire Station<br>Latitude: ${location.latitude}<br>Longitude: ${location.longitude}<br>Cluster: ${location.cluster}`;
+          } else if (location.type === 'fire_incident') {
+              return `<b>Fire Incident</b><br>${location.incidentId}<br>Latitude: ${location.latitude}<br>Longitude: ${location.longitude}<br>Cluster: ${location.cluster}`;
+          }
+      }
+  </script>
+  
 
-        
-        function getPopupContent(location) {
-            if (location.type === 'hospital') {
-                return `<b>${location.Name}</b><br>Hospital<br>Latitude: ${location.latitude}<br>Longitude: ${location.longitude}`;
-            } else if (location.type === 'fire_station') {
-                return `<b>${location.StationID}</b><br>Fire Station<br>Latitude: ${location.latitude}<br>Longitude: ${location.longitude}`;
-            } else if (location.type === 'fire_incident') {
-                return `<b>Fire Incident</b><br>${location.incidentId}<br>Latitude: ${location.latitude}<br>Longitude: ${location.longitude}`;
-            }
-        }
-    </script>
      <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
      <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
